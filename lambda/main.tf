@@ -106,7 +106,7 @@ resource "aws_lambda_function" "VisitorCount" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
   filename         = "VisitorCount.zip"
-  function_name    = "VisitorCount1"
+  function_name    = "VisitorCount"
   role             = aws_iam_role.iam_for_GET_lambda.arn
   handler          = "lambda_get.lambda_handler"
   source_code_hash = data.archive_file.lambda_get.output_base64sha256
@@ -119,7 +119,7 @@ resource "aws_lambda_function" "VisitorUpdate" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
   filename         = "VisitorUpdate.zip"
-  function_name    = "VisitorUpdate1"
+  function_name    = "VisitorUpdate"
   role             = aws_iam_role.iam_for_POST_lambda.arn
   handler          = "lambda_update.lambda_handler"
   source_code_hash = data.archive_file.lambda_update.output_base64sha256

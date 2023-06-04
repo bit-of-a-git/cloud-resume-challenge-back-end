@@ -3,7 +3,7 @@ import json
 
 # Connect to DynamoDB
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table("visitor_table1")
+table = dynamodb.Table("visitor_table")
 
 def lambda_handler(event, context):
     

@@ -4,7 +4,7 @@ from decimal import Decimal
 
 # Connect to DynamoDB
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table("visitor_table1")
+table = dynamodb.Table("visitor_table")
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):

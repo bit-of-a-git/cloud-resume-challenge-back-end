@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "Records" {
-  name = "Records1" # remove the 1
+  name = "Records"
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -94,7 +94,7 @@ resource "aws_iam_role_policy_attachment" "apigateway-cloudwatchlogs" {
 resource "aws_lambda_permission" "lambda_GET_permission" {
   statement_id  = "AllowMyAPIInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = var.GET_lambda_name # replace with output
+  function_name = var.GET_lambda_name
   principal     = "apigateway.amazonaws.com"
 
   # The /*/*/* part allows invocation from any stage, method and resource path
@@ -105,7 +105,7 @@ resource "aws_lambda_permission" "lambda_GET_permission" {
 resource "aws_lambda_permission" "lambda_POST_permission" {
   statement_id  = "AllowMyAPIInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = var.POST_lambda_name # replace with output
+  function_name = var.POST_lambda_name
   principal     = "apigateway.amazonaws.com"
 
   # The /*/*/* part allows invocation from any stage, method and resource path

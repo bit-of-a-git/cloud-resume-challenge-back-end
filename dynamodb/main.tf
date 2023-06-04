@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "visitor_table" {
-  name           = "visitor_table1" # make sure you remove the 1, also change it in the Lambda code
+  name           = "visitor_table"
   billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1
