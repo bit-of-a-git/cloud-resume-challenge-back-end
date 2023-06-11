@@ -5,12 +5,18 @@ terraform {
       version = "~> 4.0"
     }
   }
+  backend "s3" {
+    bucket = "terraform-back-end-state"
+    key    = "global/s3/terraform.tfstate"
+    region = "eu-west-1"
+
+    dynamodb_table = "terraform-lock-back-end"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
   region                   = "eu-west-1"
-  shared_credentials_files = ["~/.aws/credentials"]
-  shared_config_files      = ["~/.aws/config"]
 }
 
 module "lambda" {
@@ -33,6 +39,6 @@ module "apigateway" {
 module "api-gateway-enable-cors" {
   source          = "squidfunk/api-gateway-enable-cors/aws"
   version         = "0.3.3"
-  api_id          = module.apigateway.Records_api_id
-  api_resource_id = module.apigateway.Records_api_resource_id
+  api_id          = module.apigateway.visitor_count_api_id
+  api_resource_id = module.apigateway.visitor_count_api_resource_id
 }

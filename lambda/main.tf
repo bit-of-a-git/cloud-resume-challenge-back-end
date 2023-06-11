@@ -11,8 +11,8 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-resource "aws_iam_policy" "GetVisitorDB" {
-  name        = "GetVisitorDB"
+resource "aws_iam_policy" "AllowGetVisitorDB" {
+  name        = "AllowGetVisitorDB"
   description = "Allows access to the visitor count database."
 
   # Terraform's "jsonencode" function converts a
@@ -34,8 +34,8 @@ resource "aws_iam_policy" "GetVisitorDB" {
   })
 }
 
-resource "aws_iam_policy" "UpdateVisitorDB" {
-  name        = "UpdateVisitorDB"
+resource "aws_iam_policy" "AllowUpdateVisitorDB" {
+  name        = "AllowUpdateVisitorDB"
   description = "Allows access to the visitor count database."
 
   # Terraform's "jsonencode" function converts a
@@ -60,33 +60,33 @@ resource "aws_iam_policy" "UpdateVisitorDB" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "GetVisitorDB-Attachment" {
-  policy_arn = aws_iam_policy.GetVisitorDB.arn
-  role       = aws_iam_role.iam_for_GET_lambda.name
+resource "aws_iam_role_policy_attachment" "AllowGetVisitorDB-Attachment" {
+  policy_arn = aws_iam_policy.AllowGetVisitorDB.arn
+  role       = aws_iam_role.GET_lambda.name
 }
 
-resource "aws_iam_role_policy_attachment" "UpdateVisitorDB-Attachment" {
-  policy_arn = aws_iam_policy.UpdateVisitorDB.arn
-  role       = aws_iam_role.iam_for_POST_lambda.name
+resource "aws_iam_role_policy_attachment" "AllowUpdateVisitorDB-Attachment" {
+  policy_arn = aws_iam_policy.AllowUpdateVisitorDB.arn
+  role       = aws_iam_role.POST_lambda.name
 }
 
-resource "aws_iam_role_policy_attachment" "GETbasic" {
+resource "aws_iam_role_policy_attachment" "GET_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  role       = aws_iam_role.iam_for_GET_lambda.name
+  role       = aws_iam_role.GET_lambda.name
 }
 
-resource "aws_iam_role_policy_attachment" "POSTbasic" {
+resource "aws_iam_role_policy_attachment" "POST_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  role       = aws_iam_role.iam_for_POST_lambda.name
+  role       = aws_iam_role.POST_lambda.name
 }
 
-resource "aws_iam_role" "iam_for_GET_lambda" {
-  name               = "iam_for_GET_lambda"
+resource "aws_iam_role" "GET_lambda" {
+  name               = "IAM_Role_for_GET_Lambda"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
-resource "aws_iam_role" "iam_for_POST_lambda" {
-  name               = "iam_for_POST_lambda"
+resource "aws_iam_role" "POST_lambda" {
+  name               = "IAM_Role_for_POST_lambda"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -107,7 +107,7 @@ resource "aws_lambda_function" "VisitorCount" {
   # path.module in the filename.
   filename         = "VisitorCount.zip"
   function_name    = "VisitorCount"
-  role             = aws_iam_role.iam_for_GET_lambda.arn
+  role             = aws_iam_role.GET_lambda.arn
   handler          = "lambda_get.lambda_handler"
   source_code_hash = data.archive_file.lambda_get.output_base64sha256
 
@@ -120,7 +120,7 @@ resource "aws_lambda_function" "VisitorUpdate" {
   # path.module in the filename.
   filename         = "VisitorUpdate.zip"
   function_name    = "VisitorUpdate"
-  role             = aws_iam_role.iam_for_POST_lambda.arn
+  role             = aws_iam_role.POST_lambda.arn
   handler          = "lambda_update.lambda_handler"
   source_code_hash = data.archive_file.lambda_update.output_base64sha256
 

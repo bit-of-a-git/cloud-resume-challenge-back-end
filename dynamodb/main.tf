@@ -1,4 +1,4 @@
-resource "aws_dynamodb_table" "visitor_table" {
+resource "aws_dynamodb_table" "visitor" {
   name           = "visitor_table"
   billing_mode   = "PROVISIONED"
   read_capacity  = 1
@@ -12,8 +12,8 @@ resource "aws_dynamodb_table" "visitor_table" {
 }
 
 resource "aws_dynamodb_table_item" "visitor_count" {
-  table_name = aws_dynamodb_table.visitor_table.name
-  hash_key   = aws_dynamodb_table.visitor_table.hash_key
+  table_name = aws_dynamodb_table.visitor.name
+  hash_key   = aws_dynamodb_table.visitor.hash_key
   item       = <<ITEM
 {
     "record_id": {"S": "0"},
@@ -25,7 +25,7 @@ ITEM
 resource "aws_appautoscaling_target" "visitor_table_read_target" {
   max_capacity       = 10
   min_capacity       = 1
-  resource_id        = "table/${aws_dynamodb_table.visitor_table.name}"
+  resource_id        = "table/${aws_dynamodb_table.visitor.name}"
   scalable_dimension = "dynamodb:table:ReadCapacityUnits"
   service_namespace  = "dynamodb"
 }
@@ -48,7 +48,7 @@ resource "aws_appautoscaling_policy" "visitor_table_read_policy" {
 resource "aws_appautoscaling_target" "visitor_table_write_target" {
   max_capacity       = 10
   min_capacity       = 1
-  resource_id        = "table/${aws_dynamodb_table.visitor_table.name}"
+  resource_id        = "table/${aws_dynamodb_table.visitor.name}"
   scalable_dimension = "dynamodb:table:WriteCapacityUnits"
   service_namespace  = "dynamodb"
 }
