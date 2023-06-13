@@ -112,3 +112,13 @@ resource "aws_lambda_permission" "lambda_POST_permission" {
   # within API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api.visitor_count.execution_arn}/*/*/*"
 }
+
+module "api-gateway-enable-cors" {
+  source          = "squidfunk/api-gateway-enable-cors/aws"
+  version         = "0.3.3"
+  api_id          = aws_api_gateway_rest_api.visitor_count.id
+  api_resource_id = aws_api_gateway_rest_api.visitor_count.root_resource_id
+  # allow_headers   = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent", "origin"]
+  allow_methods = ["GET", "POST", "OPTIONS"]
+  allow_origin  = "*" # replace with cloudfront distribution
+}
