@@ -9,7 +9,7 @@ table = dynamodb.Table("visitor_table")
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, Decimal):
-            return str(o)
+            return float(o)
         return super(DecimalEncoder, self).default(o)
 
 def lambda_handler(event, context):
@@ -20,7 +20,8 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "headers": {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            'Access-Control-Allow-Origin': '*'
         },
         "body": json.dumps((response["Item"]["visitor_count"]), cls=DecimalEncoder)
     }
