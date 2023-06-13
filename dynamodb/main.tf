@@ -14,12 +14,16 @@ resource "aws_dynamodb_table" "visitor" {
 resource "aws_dynamodb_table_item" "visitor_count" {
   table_name = aws_dynamodb_table.visitor.name
   hash_key   = aws_dynamodb_table.visitor.hash_key
-  item       = <<ITEM
-{
+  item       = jsonencode({
     "record_id": {"S": "0"},
     "visitor_count": {"N": "0"}
-}
-ITEM
+  })
+  
+  lifecycle {
+    ignore_changes = [
+      item,
+    ]
+  }
 }
 
 resource "aws_appautoscaling_target" "visitor_table_read_target" {
