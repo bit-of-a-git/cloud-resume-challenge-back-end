@@ -5,6 +5,7 @@ terraform {
       version = "~> 4.0"
     }
   }
+
   backend "s3" {
     bucket = "terraform-back-end-state"
     key    = "global/s3/terraform.tfstate"
@@ -16,7 +17,7 @@ terraform {
 }
 
 provider "aws" {
-  region                   = "eu-west-1"
+  region = "eu-west-1"
 }
 
 module "lambda" {
@@ -34,11 +35,4 @@ module "apigateway" {
   POST_lambda_invoke = module.lambda.POST_lambda_invoke
   GET_lambda_name    = module.lambda.GET_lambda_name
   POST_lambda_name   = module.lambda.POST_lambda_name
-}
-
-module "api-gateway-enable-cors" {
-  source          = "squidfunk/api-gateway-enable-cors/aws"
-  version         = "0.3.3"
-  api_id          = module.apigateway.visitor_count_api_id
-  api_resource_id = module.apigateway.visitor_count_api_resource_id
 }

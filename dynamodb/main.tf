@@ -14,11 +14,11 @@ resource "aws_dynamodb_table" "visitor" {
 resource "aws_dynamodb_table_item" "visitor_count" {
   table_name = aws_dynamodb_table.visitor.name
   hash_key   = aws_dynamodb_table.visitor.hash_key
-  item       = jsonencode({
-    "record_id": {"S": "0"},
-    "visitor_count": {"N": "0"}
+  item = jsonencode({
+    "record_id" : { "S" : "0" },
+    "visitor_count" : { "N" : "0" }
   })
-  
+
   lifecycle {
     ignore_changes = [
       item,
