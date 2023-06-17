@@ -97,7 +97,7 @@ resource "aws_lambda_permission" "lambda_GET_permission" {
   function_name = var.GET_lambda_name
   principal     = "apigateway.amazonaws.com"
 
-  # The /*/*/* part allows invocation from any stage, method and resource path
+  # /*/*/* allows invocation from any stage, method and resource path
   # within API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api.visitor_count.execution_arn}/*/*/*"
 }
@@ -107,10 +107,7 @@ resource "aws_lambda_permission" "lambda_POST_permission" {
   action        = "lambda:InvokeFunction"
   function_name = var.POST_lambda_name
   principal     = "apigateway.amazonaws.com"
-
-  # The /*/*/* part allows invocation from any stage, method and resource path
-  # within API Gateway REST API.
-  source_arn = "${aws_api_gateway_rest_api.visitor_count.execution_arn}/*/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.visitor_count.execution_arn}/*/*/*"
 }
 
 module "api-gateway-enable-cors" {
@@ -118,7 +115,6 @@ module "api-gateway-enable-cors" {
   version         = "0.3.3"
   api_id          = aws_api_gateway_rest_api.visitor_count.id
   api_resource_id = aws_api_gateway_rest_api.visitor_count.root_resource_id
-  # allow_headers   = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent", "origin"]
-  allow_methods = ["GET", "POST", "OPTIONS"]
-  allow_origin  = "*" # replace with cloudfront distribution
+  allow_methods   = ["GET", "POST", "OPTIONS"]
+  allow_origin    = "*" # replace with cloudfront distribution
 }
