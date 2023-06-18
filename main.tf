@@ -22,6 +22,7 @@ provider "aws" {
 module "lambda" {
   source            = "./lambda"
   visitor_table_arn = module.dynamodb.visitor_table_arn
+  visitor_table_name = module.dynamodb.visitor_table_name
 }
 
 module "dynamodb" {

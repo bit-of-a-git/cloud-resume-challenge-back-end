@@ -1,10 +1,15 @@
 import boto3
 import json
+import os
 from decimal import Decimal
 
 # Connect to DynamoDB
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table("visitor_table")
+
+# Avoids hardcoding the DynamoDB table name by getting it from an environment variable
+table_name = os.environ["DYNAMODB_TABLE_NAME"]
+
+table = dynamodb.Table(table_name)
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):

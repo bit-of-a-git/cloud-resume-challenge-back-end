@@ -107,6 +107,12 @@ resource "aws_lambda_function" "VisitorCount" {
   handler          = "lambda_get.lambda_handler"
   source_code_hash = data.archive_file.lambda_get.output_base64sha256
   runtime          = "python3.10"
+  
+  environment {
+    variables = {
+      DYNAMODB_TABLE_NAME = var.visitor_table_name
+    }
+  }
 }
 
 resource "aws_lambda_function" "VisitorUpdate" {
@@ -118,4 +124,10 @@ resource "aws_lambda_function" "VisitorUpdate" {
   handler          = "lambda_update.lambda_handler"
   source_code_hash = data.archive_file.lambda_update.output_base64sha256
   runtime          = "python3.10"
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE_NAME = var.visitor_table_name
+    }
+  }
 }
