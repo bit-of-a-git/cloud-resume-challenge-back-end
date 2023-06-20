@@ -1,0 +1,63 @@
+name: Terraform Setup
+
+on:
+  push:
+    branches: 
+      - main
+
+env:
+  aws-dev-account: ${{ secrets.AWS_DEV_ACCOUNT }}
+
+jobs:
+  build:
+    permissions:
+      id-token: write    # Job to connect to Identity Token to receive the token
+      contents: read     # Read access to the repository
+    runs-on:
+       - ubuntu-latest
+       
+    steps:
+    # Checkout Repository
+    - name : Check out Git Repository
+      uses: actions/checkout@v3  
+      
+    - name: Connecting GitHub Actions To AWS Using OIDC - Roles
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: eu-west-1
+        role-to-assume: arn:aws:iam::${{ env.aws-dev-account }}:role/Github
+        role-session-name: github-actions-session
+ 
+   # Terraform Operations
+    - name : Terraform Setup
+      uses: hashicorp/setup-terraform@v2
+      
+    - name: Terraform Init
+      id: init
+      run: terraform init
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+    
+    - name: Terraform Plan
+      id: plan
+      if: ${{ github.event_name == 'push' }}
+      run: |
+        terraform plan -refresh=false  -no-color -out out.plan
+      continue-on-error: false
+      
+    - name: Terraform Plan Status
+      if: ${{ steps.plan.outcome == 'failure' }}
+      run: exit 1
+      
+    - name: Terraform Apply
+      id: apply
+      if: ${{ github.event_name == 'push' }}
+      run: |
+        terraform apply --auto-approve
+      continue-on-error: true
+      
+    - name: Terraform Apply Status
+      if: ${{ steps.apply.outcome == 'failure' }}
+      run: exit 1
