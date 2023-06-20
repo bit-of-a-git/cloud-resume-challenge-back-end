@@ -5,6 +5,9 @@ on:
     branches: 
       - main
 
+env:
+  aws-dev-account: ${{ secrets.AWS_DEV_ACCOUNT }}
+
 jobs:
   build:
     permissions:
@@ -22,7 +25,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-region: eu-west-1
-        role-to-assume: arn:aws:iam::800667114692:role/Github
+        role-to-assume: arn:aws:iam::${{ env.aws-dev-account }}:role/Github
         role-session-name: github-actions-session
  
    # Terraform Operations
