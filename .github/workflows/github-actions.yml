@@ -1,12 +1,13 @@
-name: Terraform Setup
+name: Test Infrastructure
 
 on:
-  push:
+  pull_request:
     branches: 
       - main
 
 env:
   aws-dev-account: ${{ secrets.AWS_DEV_ACCOUNT }}
+  env.aws-dev-bucket: ${{ secrets.AWS_DEV_BUCKET }}
 
 jobs:
   build:
@@ -34,7 +35,7 @@ jobs:
       
     - name: Terraform Init
       id: init
-      run: terraform init
+      run: terraform init -backend-config "bucket=${{ env.aws-dev-bucket }}"
 
     - name: Terraform Validate
       id: validate
@@ -42,7 +43,7 @@ jobs:
     
     - name: Terraform Plan
       id: plan
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         terraform plan -refresh=false  -no-color -out out.plan
       continue-on-error: false
@@ -53,7 +54,7 @@ jobs:
       
     - name: Terraform Apply
       id: apply
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         terraform apply --auto-approve
       continue-on-error: true
@@ -61,3 +62,17 @@ jobs:
     - name: Terraform Apply Status
       if: ${{ steps.apply.outcome == 'failure' }}
       run: exit 1
+
+    - name: Get API endpoint
+      run: export API_ENDPOINT=$(terraform output -raw apigateway_stage_URL)
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run Cypress tests
+      run: npx cypress run
