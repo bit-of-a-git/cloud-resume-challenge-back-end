@@ -64,7 +64,9 @@ jobs:
       run: exit 1
 
     - name: Get API endpoint
-      run: export API_ENDPOINT=$(terraform output -raw apigateway_stage_URL)
+      id: api-output
+      run: |
+        echo "::set-output name=apiEndpoint::$(terraform output -raw apigateway_stage_URL)"
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -75,4 +77,4 @@ jobs:
       run: npm install cypress
 
     - name: Run Cypress tests
-      run: npx cypress run
+      run: npx cypress run --env apiEndpoint=${{ steps.api-output.outputs.apiEndpoint }}
