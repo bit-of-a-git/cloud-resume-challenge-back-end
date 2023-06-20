@@ -7,7 +7,7 @@ on:
 
 env:
   aws-dev-account: ${{ secrets.AWS_DEV_ACCOUNT }}
-  env.aws-dev-bucket: ${{ secrets.AWS_DEV_BUCKET }}
+  aws-dev-bucket: ${{ secrets.AWS_DEV_BUCKET }}
 
 jobs:
   build:
