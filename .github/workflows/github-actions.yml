@@ -84,7 +84,6 @@ jobs:
     env:
       API_ENDPOINT: ${{ needs.build.outputs.apiEndpoint  }}
     needs: build
-    container: cypress/included:9.5.0
     steps:
       - uses: actions/checkout@v1
       - name: Cypress run
