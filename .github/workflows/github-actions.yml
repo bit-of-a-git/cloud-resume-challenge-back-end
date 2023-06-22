@@ -87,4 +87,5 @@ jobs:
     container: cypress/included:9.5.0
     steps:
       - uses: actions/checkout@v1
-      - run: cypress run
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
