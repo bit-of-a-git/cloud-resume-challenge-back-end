@@ -71,7 +71,7 @@ jobs:
     - name: Cypress Tests
       uses: actions/checkout@v1
       env:
-      API_ENDPOINT: ${{ needs.build.outputs.apiEndpoint  }}
+        API_ENDPOINT: ${{ needs.build.outputs.apiEndpoint  }}
 
     - name: Cypress run
       uses: cypress-io/github-action@v4.1.0
