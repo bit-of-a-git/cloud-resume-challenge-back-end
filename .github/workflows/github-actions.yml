@@ -71,12 +71,12 @@ jobs:
     - name: Cypress Tests
       uses: actions/checkout@v1
       env:
-        apiEndpoint: ${{ steps.api-output.outputs.api-endpoint  }}
+        apiEndpoint: ${{ steps.api-output.outputs.apiEndpoint  }}
 
     - name: Cypress run
       uses: cypress-io/github-action@v4.1.0
       env:
-        apiEndpoint: ${{ steps.api-output.outputs.api-endpoint  }}
+        apiEndpoint: ${{ steps.api-output.outputs.apiEndpoint  }}
 
     #   # Step 2: Set up Node.js
     # - name: Set up Node.js
