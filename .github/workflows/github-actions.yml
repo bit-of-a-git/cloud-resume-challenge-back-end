@@ -68,10 +68,16 @@ jobs:
       run: |
         echo "::set-output name=apiEndpoint::$(terraform output -raw apigateway_stage_URL)"
 
+    - name: Verify Terraform Output
+      run: echo ${{ steps.api-output.outputs.apiEndpoint }}
+
     - name: Cypress Tests
       uses: actions/checkout@v1
       env:
         apiEndpoint: ${{ steps.api-output.outputs.apiEndpoint  }}
+
+    - name: Verify Environment Variable
+      run: echo $apiEndpoint
 
     - name: Cypress run
       uses: cypress-io/github-action@v4.1.0
