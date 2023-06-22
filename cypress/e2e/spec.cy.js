@@ -1,5 +1,5 @@
 describe('API Gateway Tests', () => {
-  const myEndpoint = "http://911e4cqcrk.execute-api.eu-west-1.amazonaws.com/dev";
+  const myEndpoint = "https://911e4cqcrk.execute-api.eu-west-1.amazonaws.com/dev";
 
   it('should retrieve the count via GET request', () => {
       cy.request('GET', myEndpoint) // Replace with your actual GET endpoint
