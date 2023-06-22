@@ -70,7 +70,7 @@ jobs:
 
     - name: Replace apiEndpoint in cypress.config.js
       run: |
-        cypressConfig=$(find <path-to-cypress-directory> -name "cypress.config.js")
+        cypressConfig=$(find .. -name "cypress.config.js")
 
         apiEndpoint=$(terraform output -raw apigateway_stage_URL)
       
