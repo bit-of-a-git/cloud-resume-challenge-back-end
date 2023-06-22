@@ -78,10 +78,13 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Run Cypress tests
-      env:
-        API_ENDPOINT: ${{ steps.api-output.outputs.api-endpoint }}
-      run: |
-          cd cypress
-          npm ci
-          npm run cy:run
+  job-cypress:  
+    name: Cypress Tests
+    runs-on: ubuntu-latest
+    env:
+      API_ENDPOINT: ${{ needs.build.outputs.apiEndpoint  }}
+    needs: build
+    container: cypress/included:9.5.0
+    steps:
+      - uses: actions/checkout@v1
+      - run: cypress run
