@@ -68,14 +68,6 @@ jobs:
       run: |
         echo "::set-output name=apiEndpoint::$(terraform output -raw apigateway_stage_URL)"
 
-    - name: Replace apiEndpoint in cypress.config.js
-      run: |
-        cypressConfig=$(find .. -name "cypress.config.js")
-
-        apiEndpoint=$(terraform output -raw apigateway_stage_URL)
-      
-        sed -i "s/process\.env\.apiEndpoint/$apiEndpoint/g" "$cypressConfig"
-
     - name: Cypress Tests
       uses: actions/checkout@v1
       env:
@@ -83,6 +75,8 @@ jobs:
 
     - name: Cypress run
       uses: cypress-io/github-action@v4.1.0
+      env:
+        apiEndpoint: ${{ steps.api-output.outputs.api-endpoint  }}
 
     #   # Step 2: Set up Node.js
     # - name: Set up Node.js
