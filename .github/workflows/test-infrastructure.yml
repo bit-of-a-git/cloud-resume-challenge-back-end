@@ -7,7 +7,7 @@ on:
 
 env:
   aws-dev-account: ${{ secrets.AWS_DEV_ACCOUNT }}
-  env.aws-dev-bucket: ${{ secrets.AWS_DEV_BUCKET }}
+  aws-dev-bucket: ${{ secrets.AWS_DEV_BUCKET }}
 
 jobs:
   build:
@@ -26,12 +26,14 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-region: eu-west-1
-        role-to-assume: arn:aws:iam::${{ env.aws-dev-account }}:role/Github
+        role-to-assume: arn:aws:iam::${{ env.aws-dev-account }}:role/github-actions-role
         role-session-name: github-actions-session
  
    # Terraform Operations
     - name : Terraform Setup
       uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_wrapper: false
       
     - name: Terraform Init
       id: init
@@ -63,16 +65,19 @@ jobs:
       if: ${{ steps.apply.outcome == 'failure' }}
       run: exit 1
 
-    - name: Get API endpoint
-      run: export API_ENDPOINT=$(terraform output -raw apigateway_stage_URL)
+    - name: Set API URL as Cypress environment variable
+      run: |
+        echo "CYPRESS_baseUrl=$(terraform output -raw apigateway_stage_URL)" >> $GITHUB_ENV
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14
+    - name: Cypress Tests
+      uses: actions/checkout@v1
 
-    - name: Install dependencies
-      run: npm ci
+    - name: Cypress run
+      uses: cypress-io/github-action@v4.1.0
 
-    - name: Run Cypress tests
-      run: npx cypress run
+    - name: Terraform Destroy
+      if: ${{ needs.cypress.outputs.exitcode == '0' }}
+      run: |
+        terraform init -backend-config "bucket=${{ env.aws-dev-bucket }}"
+        terraform destroy --auto-approve
+      continue-on-error: true

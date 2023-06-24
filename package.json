@@ -1,0 +1,22 @@
+{
+  "name": "cloud-resume-challenge-back-end",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bit-of-a-git/cloud-resume-challenge-back-end.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bit-of-a-git/cloud-resume-challenge-back-end/issues"
+  },
+  "homepage": "https://github.com/bit-of-a-git/cloud-resume-challenge-back-end#readme",
+  "devDependencies": {
+    "cypress": "^12.15.0"
+  }
+}
