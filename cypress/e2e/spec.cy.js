@@ -1,14 +1,14 @@
 describe('API Gateway Tests', () => {
-  const myEndpoint = "https://911e4cqcrk.execute-api.eu-west-1.amazonaws.com/dev";
+  // const myEndpoint = Cypress.env('apiEndpoint');
 
   it('should retrieve the count via GET request', () => {
-      cy.request('GET', myEndpoint) // Replace with your actual GET endpoint
+      cy.request('GET', '/') // Replace with your actual GET endpoint
       .its('body')
       .should('be.a', 'number');
   });
 
   it('should increment the count via POST request', () => {
-      cy.request('POST', myEndpoint) // Replace with your actual POST endpoint
+      cy.request('POST', '/') // Replace with your actual POST endpoint
       .its('body')
       .should('eq', 'Records added successfully.');
   });
