@@ -45,7 +45,6 @@ jobs:
     
     - name: Terraform Plan
       id: plan
-      if: ${{ github.event_name == 'pull_request' }}
       run: |
         terraform plan -refresh=false  -no-color -out out.plan
       continue-on-error: false
@@ -56,7 +55,6 @@ jobs:
       
     - name: Terraform Apply
       id: apply
-      if: ${{ github.event_name == 'pull_request' }}
       run: |
         terraform apply --auto-approve
       continue-on-error: true
