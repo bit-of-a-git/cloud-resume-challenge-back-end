@@ -78,5 +78,6 @@ jobs:
     - name: Terraform Destroy
       if: ${{ needs.cypress.outputs.exitcode == '0' }}
       run: |
+        terraform init -backend-config "bucket=${{ env.aws-dev-bucket }}"
         terraform destroy --auto-approve
       continue-on-error: true
