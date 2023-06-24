@@ -65,20 +65,22 @@ jobs:
       if: ${{ steps.apply.outcome == 'failure' }}
       run: exit 1
 
-    - name: Get API endpoint
-      id: api-output
+    - name: Set API URL as Cypress environment variable
       run: |
-        API_ENDPOINT=$(terraform output -raw apigateway_stage_URL)
-        echo "::set-output name=apiEndpoint::${API_ENDPOINT}"
+        echo "CYPRESS_baseUrl=$(terraform output -raw apigateway_stage_URL)" >> $GITHUB_ENV
+        
+    # - name: Get API endpoint
+    #   id: api-output
+    #   run: |
+    #     API_ENDPOINT=$(terraform output -raw apigateway_stage_URL)
+    #     echo "::set-output name=apiEndpoint::${API_ENDPOINT}"
 
     - name: Cypress Tests
       uses: actions/checkout@v1
 
-    - name: Set Cypress environment variables
-      run: |
-        echo "CYPRESS_baseUrl=${{ steps.api-output.outputs.apiEndpoint }}" >> $GITHUB_ENV
+    # - name: Set Cypress environment variables
+    #   run: |
+    #     echo "CYPRESS_baseUrl=${{ steps.api-output.outputs.apiEndpoint }}" >> $GITHUB_ENV
 
     - name: Cypress run
       uses: cypress-io/github-action@v4.1.0
-      # env:
-      #   # CYPRESS_baseUrl: ${{ steps.api-output.outputs.apiEndpoint  }}
