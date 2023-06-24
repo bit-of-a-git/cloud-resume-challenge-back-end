@@ -66,10 +66,15 @@ jobs:
     - name: Get API endpoint
       id: api-output
       run: |
-        echo "::set-output name=apiEndpoint::$(terraform output -raw apigateway_stage_URL)"
+        API_ENDPOINT=$(terraform output -raw apigateway_stage_URL)
+        echo "::set-output name=apiEndpoint::${API_ENDPOINT}"
 
     - name: Cypress Tests
       uses: actions/checkout@v1
+
+    - name: Set Cypress environment variables
+      run: |
+        echo "CYPRESS_baseUrl=${{ steps.api-output.outputs.apiEndpoint }}" >> $GITHUB_ENV
 
     - name: Cypress run
       uses: cypress-io/github-action@v4.1.0
