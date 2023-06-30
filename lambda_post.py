@@ -7,6 +7,12 @@ import os
 dynamodb = boto3.resource('dynamodb')
 table_name = os.environ["DYNAMODB_TABLE_NAME"]
 
+# Common headers dictionary
+headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*"
+}
+
 def lambda_handler(event, context):
     try:
         visitor_ip = event['requestContext']['identity']['sourceIp']
@@ -21,6 +27,7 @@ def lambda_handler(event, context):
             # Item already exists, do not insert a duplicate
             return {
                 'statusCode': 200,
+                'headers': headers,
                 'body': json.dumps({'message': 'IP address already exists'})
             }
         
@@ -30,15 +37,16 @@ def lambda_handler(event, context):
         
         response = {
             'statusCode': 200,
+            'headers': headers,
             'body': json.dumps({'message': 'Hashed IP address stored successfully'})
         }
 
     except Exception as e:
         response = {
             'statusCode': 500,
+            'headers': headers,
             'body': json.dumps({'error': 'Failed to store hashed IP address'})
         }
-
     return response
 
 def hash_ip_address(ip_address):

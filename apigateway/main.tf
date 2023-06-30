@@ -1,5 +1,5 @@
-resource "aws_api_gateway_rest_api" "visitor_count" {
-  name = "visitor_count"
+resource "aws_api_gateway_rest_api" "main" {
+  name = "Hit-and-IP-counts"
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -7,51 +7,51 @@ resource "aws_api_gateway_rest_api" "visitor_count" {
 }
 
 resource "aws_api_gateway_method" "GET" {
-  rest_api_id   = aws_api_gateway_rest_api.visitor_count.id
-  resource_id   = aws_api_gateway_rest_api.visitor_count.root_resource_id
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  resource_id   = aws_api_gateway_rest_api.main.root_resource_id
   http_method   = "GET"
   authorization = "NONE"
 }
 
 resource "aws_api_gateway_method" "POST" {
-  rest_api_id   = aws_api_gateway_rest_api.visitor_count.id
-  resource_id   = aws_api_gateway_rest_api.visitor_count.root_resource_id
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  resource_id   = aws_api_gateway_rest_api.main.root_resource_id
   http_method   = "POST"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "GET_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.visitor_count.id
-  resource_id             = aws_api_gateway_rest_api.visitor_count.root_resource_id
+resource "aws_api_gateway_integration" "GET" {
+  rest_api_id             = aws_api_gateway_rest_api.main.id
+  resource_id             = aws_api_gateway_rest_api.main.root_resource_id
   http_method             = aws_api_gateway_method.GET.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = var.GET_lambda_invoke
 }
 
-resource "aws_api_gateway_integration" "POST_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.visitor_count.id
-  resource_id             = aws_api_gateway_rest_api.visitor_count.root_resource_id
+resource "aws_api_gateway_integration" "POST" {
+  rest_api_id             = aws_api_gateway_rest_api.main.id
+  resource_id             = aws_api_gateway_rest_api.main.root_resource_id
   http_method             = aws_api_gateway_method.POST.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = var.POST_lambda_invoke
 }
 
-resource "aws_api_gateway_deployment" "my_deployment" {
-  depends_on  = [aws_api_gateway_integration.GET_integration, aws_api_gateway_integration.POST_integration]
-  rest_api_id = aws_api_gateway_rest_api.visitor_count.id
+resource "aws_api_gateway_deployment" "main" {
+  depends_on  = [aws_api_gateway_integration.GET, aws_api_gateway_integration.POST]
+  rest_api_id = aws_api_gateway_rest_api.main.id
 }
 
 resource "aws_api_gateway_stage" "dev" {
-  deployment_id = aws_api_gateway_deployment.my_deployment.id
-  rest_api_id   = aws_api_gateway_rest_api.visitor_count.id
+  deployment_id = aws_api_gateway_deployment.main.id
+  rest_api_id   = aws_api_gateway_rest_api.main.id
   stage_name    = "dev"
-  depends_on    = [aws_api_gateway_account.demo]
+  depends_on    = [aws_api_gateway_account.main]
 }
 
 resource "aws_api_gateway_method_settings" "all" {
-  rest_api_id = aws_api_gateway_rest_api.visitor_count.id
+  rest_api_id = aws_api_gateway_rest_api.main.id
   stage_name  = aws_api_gateway_stage.dev.stage_name
   method_path = "*/*"
 
@@ -62,7 +62,7 @@ resource "aws_api_gateway_method_settings" "all" {
   }
 }
 
-resource "aws_api_gateway_account" "demo" {
+resource "aws_api_gateway_account" "main" {
   cloudwatch_role_arn = aws_iam_role.cloudwatch.arn
 }
 
@@ -99,7 +99,7 @@ resource "aws_lambda_permission" "lambda_GET_permission" {
 
   # /*/*/* allows invocation from any stage, method and resource path
   # within API Gateway REST API.
-  source_arn = "${aws_api_gateway_rest_api.visitor_count.execution_arn}/*/*/*"
+  source_arn = "${aws_api_gateway_rest_api.main.execution_arn}/*/*/*"
 }
 
 resource "aws_lambda_permission" "lambda_POST_permission" {
@@ -107,14 +107,14 @@ resource "aws_lambda_permission" "lambda_POST_permission" {
   action        = "lambda:InvokeFunction"
   function_name = var.POST_lambda_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.visitor_count.execution_arn}/*/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.main.execution_arn}/*/*/*"
 }
 
 module "api-gateway-enable-cors" {
   source          = "squidfunk/api-gateway-enable-cors/aws"
   version         = "0.3.3"
-  api_id          = aws_api_gateway_rest_api.visitor_count.id
-  api_resource_id = aws_api_gateway_rest_api.visitor_count.root_resource_id
+  api_id          = aws_api_gateway_rest_api.main.id
+  api_resource_id = aws_api_gateway_rest_api.main.root_resource_id
   allow_methods   = ["GET", "POST", "OPTIONS"]
   allow_origin    = "*" # replace with cloudfront distribution
 }

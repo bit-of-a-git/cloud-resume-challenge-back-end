@@ -19,11 +19,11 @@ provider "aws" {
 }
 
 module "lambda" {
-  source            = "./lambda"
-  visitor_table_arn = module.dynamodb.visitor_table_arn
-  visitor_table_name = module.dynamodb.visitor_table_name
-  ip_address_table_arn = module.dynamodb.ip_address_table_arn
-  ip_address_table_name = module.dynamodb.ip_address_table_name
+  source                 = "./lambda"
+  hit_counter_table_arn  = module.dynamodb.hit_counter_table_arn
+  hit_counter_table_name = module.dynamodb.hit_counter_table_name
+  ip_address_table_arn   = module.dynamodb.ip_address_table_arn
+  ip_address_table_name  = module.dynamodb.ip_address_table_name
 }
 
 module "dynamodb" {
