@@ -10,7 +10,7 @@ describe('API Gateway Tests', () => {
     .then((response) => {
       expect(response.status).to.eq(200);
       expect(response.redirectedToUrl).to.be.undefined;
-      expect(response.body).to.have.property('visitor_count').that.is.a('number');
+      expect(response.body).to.have.property('hit_count').that.is.a('number');
       expect(response.body).to.have.property('hashed_ip_count').that.is.a('number');
     });
   });
