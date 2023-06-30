@@ -1,34 +1,47 @@
-import boto3
 import json
+import boto3
+import hashlib
+import time
 import os
 
-# Connect to DynamoDB
-dynamodb = boto3.resource("dynamodb")
-
-# Avoids hardcoding the DynamoDB table name by getting it from an environment variable
+dynamodb = boto3.resource('dynamodb')
 table_name = os.environ["DYNAMODB_TABLE_NAME"]
 
-table = dynamodb.Table(table_name)
-
 def lambda_handler(event, context):
-    
-    # Get the current visitor count
-    response = table.get_item(Key={"record_id":"0"})
-    visitor_count = response["Item"]["visitor_count"]
-    
-    # Increment the visit count by 1
-    visitor_count += 1
-    
-    # Update the visit count
-    response = table.put_item(Item={"record_id":"0", "visitor_count": visitor_count})
-    
-    # Return the updated visit count
+    try:
+        visitor_ip = event['requestContext']['identity']['sourceIp']
+        
+        hashed_ip = hash_ip_address(visitor_ip)
+        
+        table = dynamodb.Table(table_name)
 
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json",
-            'Access-Control-Allow-Origin': '*'
-        },
-        "body": json.dumps("Records added successfully.")
-    }
+        response = table.get_item(Key={'hashed_ip_address': hashed_ip})
+        
+        if 'Item' in response:
+            # Item already exists, do not insert a duplicate
+            return {
+                'statusCode': 200,
+                'body': json.dumps({'message': 'IP address already exists'})
+            }
+        
+        current_timestamp = int(time.time()) + 2678400  # Convert current datetime to epoch number + 1 month
+        
+        table.put_item(Item={'hashed_ip_address': hashed_ip, 'timestamp': current_timestamp})
+        
+        response = {
+            'statusCode': 200,
+            'body': json.dumps({'message': 'Hashed IP address stored successfully'})
+        }
+
+    except Exception as e:
+        response = {
+            'statusCode': 500,
+            'body': json.dumps({'error': 'Failed to store hashed IP address'})
+        }
+
+    return response
+
+def hash_ip_address(ip_address):
+    # Hash the IP address using SHA-256 algorithm
+    hashed_ip = hashlib.sha256(ip_address.encode()).hexdigest()
+    return hashed_ip

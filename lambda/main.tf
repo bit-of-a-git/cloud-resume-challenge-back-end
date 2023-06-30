@@ -23,18 +23,21 @@ resource "aws_iam_policy" "AllowGetVisitorDB" {
           "dynamodb:BatchGetItem",
           "dynamodb:GetItem",
           "dynamodb:Query",
-          "dynamodb:Scan"
+          "dynamodb:Scan",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem"
         ]
         Effect   = "Allow"
-        Resource = var.visitor_table_arn
+        Resource = [var.visitor_table_arn, var.ip_address_table_arn]
       },
     ]
   })
 }
 
-resource "aws_iam_policy" "AllowUpdateVisitorDB" {
-  name        = "AllowUpdateVisitorDB"
-  description = "Allows access to the visitor count database."
+resource "aws_iam_policy" "AllowUpdateIPAddressDB" {
+  name        = "AllowUpdateIPAddressDB"
+  description = "Allows access to the ip address database."
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -50,7 +53,7 @@ resource "aws_iam_policy" "AllowUpdateVisitorDB" {
           "dynamodb:UpdateItem"
         ]
         Effect   = "Allow"
-        Resource = var.visitor_table_arn
+        Resource = var.ip_address_table_arn
       },
     ]
   })
@@ -61,8 +64,8 @@ resource "aws_iam_role_policy_attachment" "AllowGetVisitorDB-Attachment" {
   role       = aws_iam_role.GET_lambda.name
 }
 
-resource "aws_iam_role_policy_attachment" "AllowUpdateVisitorDB-Attachment" {
-  policy_arn = aws_iam_policy.AllowUpdateVisitorDB.arn
+resource "aws_iam_role_policy_attachment" "AllowUpdateIPAddressDB-Attachment" {
+  policy_arn = aws_iam_policy.AllowUpdateIPAddressDB.arn
   role       = aws_iam_role.POST_lambda.name
 }
 
@@ -110,7 +113,8 @@ resource "aws_lambda_function" "VisitorCount" {
   
   environment {
     variables = {
-      DYNAMODB_TABLE_NAME = var.visitor_table_name
+      DYNAMODB_COUNT_TABLE_NAME = var.visitor_table_name
+      DYNAMODB_IP_TABLE_NAME = var.ip_address_table_name
     }
   }
 }
@@ -127,7 +131,7 @@ resource "aws_lambda_function" "VisitorUpdate" {
 
   environment {
     variables = {
-      DYNAMODB_TABLE_NAME = var.visitor_table_name
+      DYNAMODB_TABLE_NAME = var.ip_address_table_name
     }
   }
 }
