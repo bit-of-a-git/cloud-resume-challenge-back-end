@@ -1,5 +1,11 @@
-variable "visitor_table_arn" {
+variable "hit_counter_table_arn" {
 }
 
-variable "visitor_table_name" {
+variable "hit_counter_table_name" {
+}
+
+variable "ip_address_table_arn" {
+}
+
+variable "ip_address_table_name" {
 }
