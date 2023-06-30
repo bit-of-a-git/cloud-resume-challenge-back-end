@@ -27,7 +27,7 @@ describe('API Gateway Tests', () => {
       expect(response.body).to.satisfy((body) => {
         return (
           body.message === 'IP address already exists' ||
-          body.message === 'Hashed IP address stored successfully.'
+          body.message === 'Hashed IP address stored successfully'
         );
       });
     });
