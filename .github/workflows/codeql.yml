@@ -12,8 +12,6 @@
 name: "CodeQL"
 
 on:
-  push:
-    branches: [ "main", "*" ]
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
@@ -75,3 +73,4 @@ jobs:
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
+        fail-on: "error+warning"
