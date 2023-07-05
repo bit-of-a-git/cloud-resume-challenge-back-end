@@ -11,4 +11,4 @@ variable "POST_lambda_name" {
 }
 
 variable "git_commit_id" {
- }
+}
