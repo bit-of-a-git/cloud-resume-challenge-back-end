@@ -9,3 +9,6 @@ variable "ip_address_table_arn" {
 
 variable "ip_address_table_name" {
 }
+
+variable "git_commit_id" {
+ }

@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "hit_counter" {
-  name           = "hit_counter"
+  name           = "hit_counter-${var.git_commit_id}"
   billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1
@@ -73,7 +73,7 @@ resource "aws_appautoscaling_policy" "hit_counter_table_write_policy" {
 }
 
 resource "aws_dynamodb_table" "ip_address" {
-  name           = "ip_addresses"
+  name           = "ip_addresses-${var.git_commit_id}"
   billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1
