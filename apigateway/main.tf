@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "main" {
-  name = "Hit-and-IP-counts"
+  name = "Cloud-Resume-API-${var.git_commit_id}"
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -67,7 +67,7 @@ resource "aws_api_gateway_account" "main" {
 }
 
 resource "aws_iam_role" "cloudwatch" {
-  name = "api_gateway_cloudwatch_global"
+  name = "api_gateway_cloudwatch_global-${var.git_commit_id}"
 
   assume_role_policy = <<EOF
 {
@@ -92,7 +92,6 @@ resource "aws_iam_role_policy_attachment" "apigateway_cloudwatchlogs" {
 }
 
 resource "aws_lambda_permission" "lambda_GET_permission" {
-  statement_id  = "AllowMyAPIInvoke"
   action        = "lambda:InvokeFunction"
   function_name = var.GET_lambda_name
   principal     = "apigateway.amazonaws.com"
@@ -103,7 +102,6 @@ resource "aws_lambda_permission" "lambda_GET_permission" {
 }
 
 resource "aws_lambda_permission" "lambda_POST_permission" {
-  statement_id  = "AllowMyAPIInvoke"
   action        = "lambda:InvokeFunction"
   function_name = var.POST_lambda_name
   principal     = "apigateway.amazonaws.com"

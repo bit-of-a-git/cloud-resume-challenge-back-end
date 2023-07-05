@@ -1,33 +1,5 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-  }
-
-  backend "s3" {
-    key            = "global/s3/terraform.tfstate"
-    region         = "eu-west-1"
-    dynamodb_table = "terraform-lock-back-end"
-    encrypt        = true
-  }
-}
-
-provider "aws" {
-  region = "eu-west-1"
-}
-
-module "lambda" {
-  source                 = "./lambda"
-  hit_counter_table_arn  = module.dynamodb.hit_counter_table_arn
-  hit_counter_table_name = module.dynamodb.hit_counter_table_name
-  ip_address_table_arn   = module.dynamodb.ip_address_table_arn
-  ip_address_table_name  = module.dynamodb.ip_address_table_name
-}
-
-module "dynamodb" {
-  source = "./dynamodb"
+data "git_repository" "main" {
+  path = path.root
 }
 
 module "apigateway" {
@@ -36,4 +8,19 @@ module "apigateway" {
   POST_lambda_invoke = module.lambda.POST_lambda_invoke
   GET_lambda_name    = module.lambda.GET_lambda_name
   POST_lambda_name   = module.lambda.POST_lambda_name
+  git_commit_id      = substr(data.git_repository.main.commit_sha, 0, 13)
+}
+
+module "dynamodb" {
+  source        = "./dynamodb"
+  git_commit_id = substr(data.git_repository.main.commit_sha, 0, 13)
+}
+
+module "lambda" {
+  source                 = "./lambda"
+  hit_counter_table_arn  = module.dynamodb.hit_counter_table_arn
+  hit_counter_table_name = module.dynamodb.hit_counter_table_name
+  ip_address_table_arn   = module.dynamodb.ip_address_table_arn
+  ip_address_table_name  = module.dynamodb.ip_address_table_name
+  git_commit_id          = substr(data.git_repository.main.commit_sha, 0, 13)
 }
