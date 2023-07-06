@@ -15,7 +15,7 @@ resource "aws_lambda_function" "GET" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
   filename         = data.archive_file.lambda_get.output_path
-  function_name    = "Get-Hit-And-IP-Count-${var.git_commit_id}"
+  function_name    = "Get-Hit-And-IP-Count${var.append}"
   role             = aws_iam_role.GET_lambda.arn
   handler          = "lambda_get.lambda_handler"
   source_code_hash = data.archive_file.lambda_get.output_base64sha256
@@ -76,7 +76,7 @@ resource "aws_lambda_function" "POST" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
   filename         = data.archive_file.lambda_post.output_path
-  function_name    = "Post-Hashed-IP-${var.git_commit_id}"
+  function_name    = "Post-Hashed-IP${var.append}"
   role             = aws_iam_role.POST_lambda.arn
   handler          = "lambda_post.lambda_handler"
   source_code_hash = data.archive_file.lambda_post.output_base64sha256

@@ -43,11 +43,14 @@ jobs:
       id: validate
       run: terraform validate -no-color
     
+    - name: Set outputs
+      run: echo "git_commit=$(git rev-parse --short=12 HEAD)" >> $GITHUB_ENV
+
     - name: Terraform Plan
       id: plan
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        terraform plan -refresh=false  -no-color -out out.plan
+        terraform plan -var="append=${{ env.git_commit }}" -refresh=false  -no-color -out out.plan
       continue-on-error: false
       
     - name: Terraform Plan Status
@@ -58,7 +61,7 @@ jobs:
       id: apply
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        terraform apply --auto-approve
+        terraform apply -var="append=${{ env.git_commit }}" --auto-approve
       continue-on-error: true
       
     - name: Terraform Apply Status
@@ -79,5 +82,5 @@ jobs:
       if: ${{ needs.cypress.outputs.exitcode == '0' }}
       run: |
         terraform init -backend-config "bucket=${{ env.aws-dev-bucket }}"
-        terraform destroy --auto-approve
+        terraform destroy -var="append=${{ env.git_commit }}" --auto-approve
       continue-on-error: true
