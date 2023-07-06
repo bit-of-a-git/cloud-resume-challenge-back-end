@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "main" {
-  name = "Cloud-Resume-API-${var.git_commit_id}"
+  name = "Cloud-Resume-API${var.append}"
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -67,7 +67,7 @@ resource "aws_api_gateway_account" "main" {
 }
 
 resource "aws_iam_role" "cloudwatch" {
-  name = "api_gateway_cloudwatch_global-${var.git_commit_id}"
+  name = "api_gateway_cloudwatch_global${var.append}"
 
   assume_role_policy = <<EOF
 {
