@@ -82,5 +82,5 @@ jobs:
       if: ${{ needs.cypress.outputs.exitcode == '0' }}
       run: |
         terraform init -backend-config "bucket=${{ env.aws-dev-bucket }}"
-        terraform destroy -var="append=${{ env.git_commit }} --auto-approve
+        terraform destroy -var="append=${{ env.git_commit }}" --auto-approve
       continue-on-error: true
